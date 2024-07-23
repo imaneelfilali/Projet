@@ -33,7 +33,7 @@ pipeline {
             steps {
                 script {
                     docker.image('node:20').inside {
-                        sh 'cd frontend && npm install && npm run build'
+                        sh 'cd frontend/sbr-stage && npm install && npm run build'
                     }
                     docker.build("${env.DOCKER_IMAGE_FRONTEND}", 'frontend')
                 }
