@@ -20,7 +20,12 @@ pipeline {
 
         stage('Build Backend') {
             steps {
-                echo 'Building the project...'
+                script {
+                    docker.image('maven:3.9.8-jdk-17').inside {
+                        sh 'mvn clean package -f backend/pom.xml'
+                    }
+                    docker.build("${env.DOCKER_IMAGE_BACKEND}", 'backend')
+                }
             }
         }
 
