@@ -20,10 +20,6 @@ pipeline {
 
         stage('Build Backend') {
             steps {
-                script {
-                    docker.image('maven:3.9.8-jdk-17').inside {
-                        sh 'mvn clean package -f backend/pom.xml'
-                    }
                     docker.build("${env.DOCKER_IMAGE_BACKEND}", 'backend')
                 }
             }
@@ -32,7 +28,7 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 script {
-                    docker.image('node:14').inside {
+                    docker.image('node:20').inside {
                         sh 'cd frontend && npm install && npm run build'
                     }
                     docker.build("${env.DOCKER_IMAGE_FRONTEND}", 'frontend')
