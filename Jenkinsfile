@@ -24,7 +24,7 @@ pipeline {
                     docker.image('maven:3.9.8-jdk-17').inside {
                         sh 'mvn clean package -f backend/pom.xml'
                     }
-                    docker.build("${.DOCKER_IMAGE_BACKEND}", 'backend')
+                    docker.build("${env.DOCKER_IMAGE_BACKEND}", 'backend')
                 }
             }
         }
