@@ -1,0 +1,60 @@
+version: '3.9'
+
+services:
+  db:
+    image: mysql:8
+    restart: always
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      interval: 3s
+      retries: 5
+      start_period: 30s
+    environment:
+      MYSQL_DATABASE: 'my_database'
+      MYSQL_ROOT_PASSWORD: 'mysql'
+    ports:
+      - "3306:3306"  # Changez ici le port externe de 3306 à 3307
+    volumes:
+      - mysql:/var/lib/mysql
+      - ./entrypoint.sh:/docker-entrypoint-initdb.d/entrypoint.sh
+    networks:
+      - pfa-ci-cd_spring-mysql
+
+  backend:
+    build:
+      context: ./spring-boot-projeect
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    ports:
+      - "9192:9192"
+    volumes:
+      - ./spring-boot-projeect:/app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/my_database
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: mysql
+    networks:
+      - pfa-ci-cd_spring-mysql
+      - pfa-ci-cd_react-spring
+
+  frontend:
+    build:
+      context: ./frontend/sbr-stage
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/sbr-stage:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - pfa-ci-cd_react-spring
+
+volumes:
+  mysql: {}
+
+networks:
+  pfa-ci-cd_react-spring: {}
+  pfa-ci-cd_spring-mysql: {}

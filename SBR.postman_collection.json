@@ -1,0 +1,146 @@
+{
+	"info": {
+		"_postman_id": "dd922a69-08f5-47a3-80ab-b73522e03076",
+		"name": "SBR",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36743186"
+	},
+	"item": [
+		{
+			"name": "student",
+			"item": [
+				{
+					"name": "get all students",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9192/students",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9192",
+							"path": [
+								"students"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add a new students",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "    {\"firstName\": \"ikram\",\r\n        \"lastName\": \"berrada\",\r\n        \"email\": \"ikram71@gmail.com\",\r\n        \"department\": \"marriable\"\r\n    }\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9192/students",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9192",
+							"path": [
+								"students"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update students",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n      \"firstName\": \"ikram\",\r\n        \"lastName\": \"berrada\",\r\n        \"email\": \"ikram71@gmail.com\",\r\n        \"department\": \"searching for rich husband\"\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9192/students/update/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9192",
+							"path": [
+								"students",
+								"update",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get  students by id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstName\":\"imane\" ,\r\n    \"lastName\":\"EL FILALI\" ,\r\n    \"email\":\"filali.imane02@gmail.com\",\r\n    \"department\":\"IT\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:9192/students/student/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9192",
+							"path": [
+								"students",
+								"student",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete student by id ",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:9192/students/delete/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "9192",
+							"path": [
+								"students",
+								"delete",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
