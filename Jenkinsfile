@@ -17,7 +17,16 @@ pipeline {
                 )
             }
         }
-
+        stage('Build Frontend') {
+                    steps {
+                        script {
+                            docker.image('node:20').inside {
+                                sh 'cd frontend/sbr-stage && npm install && npm run build'
+                            }
+                            docker.build("${env.DOCKER_IMAGE_FRONTEND}", 'frontend')
+                        }
+                    }
+                }
         stage('Build Backend') {
             steps {
                 script {
@@ -29,16 +38,7 @@ pipeline {
             }
         }
 
-        stage('Build Frontend') {
-            steps {
-                script {
-                    docker.image('node:20').inside {
-                        sh 'cd frontend/sbr-stage && npm install && npm run build'
-                    }
-                    docker.build("${env.DOCKER_IMAGE_FRONTEND}", 'frontend')
-                }
-            }
-        }
+
 
         stage('Push Images') {
             steps {
