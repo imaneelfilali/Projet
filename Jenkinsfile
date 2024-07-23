@@ -2,15 +2,19 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE_BACKEND = 'votre-utilisateur/backend-app:latest'
-        DOCKER_IMAGE_FRONTEND = 'votre-utilisateur/frontend-app:latest'
-        DOCKER_IMAGE_DB = 'mysql:latest'
+        DOCKER_IMAGE_BACKEND = 'elfilaliimane02273/pfa-ci-cd-backend:v1.0'
+        DOCKER_IMAGE_FRONTEND = 'elfilaliimane02273/pfa-ci-cd-frontend:v1.0'
+        DOCKER_IMAGE_DB = 'elfilaliimane02273/mysql:v1.0'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git 'https://votre-repo-git.git'
+                git(
+                  url: 'https://github.com/imaneelfilali/Projet.git',
+                  branch: 'main',
+                  credentialsId: 'd5ea2663-5a36-4414-be6d-7177fe9238f2'
+                )
             }
         }
 
