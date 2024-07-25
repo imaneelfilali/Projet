@@ -10,48 +10,16 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git(
-                    url: 'https://github.com/imaneelfilali/Projet.git',
-                    branch: 'main',
-                    credentialsId: 'd5ea2663-5a36-4414-be6d-7177fe9238f2'
-                )
-            }
-        }
-
-        stage('Setup Database') {
-            steps {
-                script {
-                    // Start the database service
-                    sh 'docker-compose up -d db'
-
-                    // Wait for the database to be ready
-                    sh '''
-                    while ! docker-compose exec db mysqladmin ping -h "127.0.0.1" --silent; do
-                        echo "Waiting for database connection..."
-                        sleep 2
-                    done
-                    '''
-
-                    // Optional: Run any initial SQL commands if needed
-                    sh 'docker-compose exec db mysql -u root -pmysql -e "CREATE DATABASE IF NOT EXISTS my_database;"'
-                }
+                git branch: 'main', url: 'https://github.com/imaneelfilali/Projet.git'
             }
         }
 
         stage('Build Backend') {
             steps {
                 script {
-                    // Build the backend Docker image
-                    sh 'docker-compose build backend'
-                }
-            }
-        }
-
-        stage('Test Backend') {
-            steps {
-                script {
-                    // Run backend tests
-                    sh 'docker-compose run backend ./gradlew test'
+                    docker.image(DOCKER_IMAGE_BACKEND).inside {
+                        sh 'cd spring-boot-projeect && ./mvnw clean package'
+                    }
                 }
             }
         }
@@ -59,46 +27,41 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 script {
-                    // Build the frontend Docker image
-                    sh 'docker-compose build frontend'
-                }
-            }
-        }
-
-        stage('Test Frontend') {
-            steps {
-                script {
-                    // Run frontend tests
-                    sh 'docker-compose run frontend npm test'
-                }
-            }
-        }
-
-        stage('Docker Build') {
-            steps {
-                script {
-                    // Build all services
-                    sh 'docker-compose build'
-                }
-            }
-        }
-
-        stage('Push Docker Images') {
-            steps {
-                script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'DOCKERHUB') {
-                        sh "docker push ${DOCKER_IMAGE_BACKEND}"
-                        sh "docker push ${DOCKER_IMAGE_FRONTEND}"
+                    docker.image(DOCKER_IMAGE_FRONTEND).inside {
+                        sh 'cd frontend/sbr-stage && npm install && npm run build'
                     }
                 }
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy Backend') {
             steps {
                 script {
-                    // Deploy the application
-                    sh 'docker-compose up -d'
+                    sh 'docker-compose up -d backend'
+                }
+            }
+        }
+
+        stage('Deploy Frontend') {
+            steps {
+                script {
+                    sh 'docker-compose up -d frontend'
+                }
+            }
+        }
+
+        stage('Deploy Database') {
+            steps {
+                script {
+                    sh 'docker-compose up -d db'
+                }
+            }
+        }
+
+        stage('Integration Test') {
+            steps {
+                script {
+                    // Add your integration tests here
                 }
             }
         }
@@ -106,7 +69,7 @@ pipeline {
 
     post {
         always {
-            // Clean up resources
+            echo 'Cleaning up...'
             sh 'docker-compose down'
         }
     }
