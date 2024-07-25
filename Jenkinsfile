@@ -10,16 +10,21 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/imaneelfilali/Projet.git'
+                git(
+                  url: 'https://github.com/imaneelfilali/Projet.git',
+                  branch: 'main',
+                  credentialsId: 'd5ea2663-5a36-4414-be6d-7177fe9238f2'
+                )
             }
         }
 
         stage('Build Backend') {
             steps {
                 script {
-                    docker.image(DOCKER_IMAGE_BACKEND).inside {
-                        sh 'cd spring-boot-projeect && ./mvnw clean package'
+                    docker.image('maven:3.9.8-jdk-17').inside {
+                        sh 'mvn clean package -f backend/pom.xml'
                     }
+                    docker.build("${env.DOCKER_IMAGE_BACKEND}", 'backend')
                 }
             }
         }
@@ -27,41 +32,30 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 script {
-                    docker.image(DOCKER_IMAGE_FRONTEND).inside {
+                    docker.image('node:20').inside {
                         sh 'cd frontend/sbr-stage && npm install && npm run build'
+                    }
+                    docker.build("${env.DOCKER_IMAGE_FRONTEND}", 'frontend')
+                }
+            }
+        }
+
+        stage('Push Images') {
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-credentials') {
+                        docker.image("${env.DOCKER_IMAGE_BACKEND}").push()
+                        docker.image("${env.DOCKER_IMAGE_FRONTEND}").push()
                     }
                 }
             }
         }
 
-        stage('Deploy Backend') {
+        stage('Deploy') {
             steps {
                 script {
-                    sh 'docker-compose up -d backend'
-                }
-            }
-        }
-
-        stage('Deploy Frontend') {
-            steps {
-                script {
-                    sh 'docker-compose up -d frontend'
-                }
-            }
-        }
-
-        stage('Deploy Database') {
-            steps {
-                script {
-                    sh 'docker-compose up -d db'
-                }
-            }
-        }
-
-        stage('Integration Test') {
-            steps {
-                script {
-                    // Add your integration tests here
+                    sh 'docker-compose down'
+                    sh 'docker-compose up -d'
                 }
             }
         }
@@ -69,8 +63,7 @@ pipeline {
 
     post {
         always {
-            echo 'Cleaning up...'
-            sh 'docker-compose down'
+            cleanWs()
         }
     }
 }
