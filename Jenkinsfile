@@ -21,8 +21,8 @@ pipeline {
         stage('Docker Build') {
             steps {
                 script {
-                    docker.build("${DOCKER_IMAGE_BACKEND}", '-f spring-boot-projeect/Dockerfile spring-boot-projeect')
-                    docker.build("${DOCKER_IMAGE_FRONTEND}", '-f frontend/sbr-stage/Dockerfile frontend/sbr-stage')
+                    docker.build("${DOCKER_IMAGE_BACKEND}", '-f spring-boot-projeect/Dockerfile ')
+                    docker.build("${DOCKER_IMAGE_FRONTEND}", '-f frontend/sbr-stage/Dockerfile ')
                 }
             }
         }
