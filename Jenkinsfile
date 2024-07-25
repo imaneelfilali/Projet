@@ -18,57 +18,6 @@ pipeline {
             }
         }
 
-        stage('Setup Database') {
-            steps {
-                script {
-                    // Start the database service
-                    sh 'docker-compose up -d db'
-                    // Wait for the database to be ready, if necessary
-                    sh '''
-                    while ! docker-compose exec db mysqladmin ping -h "127.0.0.1" --silent; do
-                        echo "Waiting for database connection..."
-                        sleep 2
-                    done
-                    '''
-                    // Optionally run initial SQL commands if needed
-                    sh 'docker-compose exec db mysql -u root -pmysql -e "CREATE DATABASE IF NOT EXISTS my_database;"'
-                }
-            }
-        }
-
-        stage('Build Backend') {
-            steps {
-                dir('spring-boot-projeect') {
-                    sh './mvnw clean package -DskipTests'
-                }
-            }
-        }
-
-        stage('Test Backend') {
-            steps {
-                dir('spring-boot-projeect') {
-                    sh './mvnw test'
-                }
-            }
-        }
-
-        stage('Build Frontend') {
-            steps {
-                dir('frontend/sbr-stage') {
-                    sh 'npm install'
-                    sh 'npm run build'
-                }
-            }
-        }
-
-        stage('Test Frontend') {
-            steps {
-                dir('frontend/sbr-stage') {
-                    sh 'npm test'
-                }
-            }
-        }
-
         stage('Docker Build') {
             steps {
                 script {
