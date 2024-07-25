@@ -20,11 +20,12 @@ pipeline {
 
         stage('Build Backend') {
             steps {
-                dir('backend') {
+                dir('spring-boot-projeect') {
                     sh './mvnw clean package -DskipTests'
                 }
             }
         }
+
 
         stage('Build Frontend') {
             steps {
@@ -35,14 +36,13 @@ pipeline {
             }
         }
 
-        stage('Test Backend') {
+            stage('Test Backend') {
             steps {
-                dir('backend') {
+                dir('spring-boot-projeect') {
                     sh './mvnw test'
                 }
             }
         }
-
         stage('Test Frontend') {
             steps {
                 dir('frontend') {
