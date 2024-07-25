@@ -18,6 +18,24 @@ pipeline {
             }
         }
 
+        stage('Setup Database') {
+            steps {
+                script {
+                    // Start the database service
+                    sh 'docker-compose up -d db'
+                    // Wait for the database to be ready, if necessary
+                    sh '''
+                    while ! docker-compose exec db mysqladmin ping -h "127.0.0.1" --silent; do
+                        echo "Waiting for database connection..."
+                        sleep 2
+                    done
+                    '''
+                    // Optionally run initial SQL commands if needed
+                    sh 'docker-compose exec db mysql -u root -pmysql -e "CREATE DATABASE IF NOT EXISTS my_database;"'
+                }
+            }
+        }
+
         stage('Build Backend') {
             steps {
                 dir('spring-boot-projeect') {
@@ -26,26 +44,26 @@ pipeline {
             }
         }
 
-
-        stage('Build Frontend') {
-            steps {
-                dir('frontend') {
-                    sh 'npm install'
-                    sh 'npm run build'
-                }
-            }
-        }
-
-            stage('Test Backend') {
+        stage('Test Backend') {
             steps {
                 dir('spring-boot-projeect') {
                     sh './mvnw test'
                 }
             }
         }
+
+        stage('Build Frontend') {
+            steps {
+                dir('frontend/sbr-stage') {
+                    sh 'npm install'
+                    sh 'npm run build'
+                }
+            }
+        }
+
         stage('Test Frontend') {
             steps {
-                dir('frontend') {
+                dir('frontend/sbr-stage') {
                     sh 'npm test'
                 }
             }
@@ -54,8 +72,8 @@ pipeline {
         stage('Docker Build') {
             steps {
                 script {
-                    docker.build("${DOCKER_IMAGE_BACKEND}", '-f backend/Dockerfile backend')
-                    docker.build("${DOCKER_IMAGE_FRONTEND}", '-f frontend/Dockerfile frontend')
+                    docker.build("${DOCKER_IMAGE_BACKEND}", '-f spring-boot-projeect/Dockerfile spring-boot-projeect')
+                    docker.build("${DOCKER_IMAGE_FRONTEND}", '-f frontend/sbr-stage/Dockerfile frontend/sbr-stage')
                 }
             }
         }
@@ -73,7 +91,7 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh 'docker-compose -f docker-compose.yml up -d'
+                sh 'docker-compose up -d'
             }
         }
     }
