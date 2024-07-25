@@ -17,17 +17,6 @@ pipeline {
                 )
             }
         }
-    stage('Docker Push') {
-        steps {
-            script {
-                docker.withRegistry('https://index.docker.io/v1/', 'DOCKERHUB') {
-                    sh "docker push ${DOCKER_IMAGE_BACKEND}"
-                    sh "docker push ${DOCKER_IMAGE_FRONTEND}"
-                }
-            }
-        }
-    }
-
 
         stage('Setup Database') {
             steps {
@@ -94,13 +83,13 @@ pipeline {
             }
         }
 
-        stage('Docker Push') {
+        stage('Push Docker Images') {
             steps {
                 script {
-                    // Push backend and frontend images to Docker Hub
-                    sh "docker login -u <your-docker-username> -p <your-docker-password>"
-                    sh "docker push ${DOCKER_IMAGE_BACKEND}"
-                    sh "docker push ${DOCKER_IMAGE_FRONTEND}"
+                    docker.withRegistry('https://index.docker.io/v1/', 'DOCKERHUB') {
+                        sh "docker push ${DOCKER_IMAGE_BACKEND}"
+                        sh "docker push ${DOCKER_IMAGE_FRONTEND}"
+                    }
                 }
             }
         }
