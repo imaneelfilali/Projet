@@ -29,28 +29,6 @@ pipeline {
             }
         }
 
-        stage('Build Frontend') {
-            steps {
-                script {
-                    docker.image('node:20').inside {
-                        sh 'cd frontend/sbr-stage && npm install && npm run build'
-                    }
-                    docker.build("${env.DOCKER_IMAGE_FRONTEND}", 'frontend')
-                }
-            }
-        }
-
-        stage('Push Images') {
-            steps {
-                script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-credentials') {
-                        docker.image("${env.DOCKER_IMAGE_BACKEND}").push()
-                        docker.image("${env.DOCKER_IMAGE_FRONTEND}").push()
-                    }
-                }
-            }
-        }
-
         stage('Deploy') {
             steps {
                 script {
