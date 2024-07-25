@@ -19,15 +19,17 @@ pipeline {
         }
 
         stage('Build Backend') {
-            steps {
-                script {
-                    docker.image('maven:3.9.8-jdk-17').inside {
-                        sh 'mvn clean package -f backend/pom.xml'
+                    steps {
+                        script {
+                            // Use Maven Docker image to build the backend
+                            docker.image('maven:3.9.8-eclipse-temurin-17').inside {
+                                sh 'mvn clean package -DskipTests -f spring-boot-projeect/pom.xml'
+                            }
+                            // Build Docker image for the backend
+                            docker.build("${env.DOCKER_IMAGE_BACKEND}", 'spring-boot-projeect')
+                        }
                     }
-                    docker.build("${env.DOCKER_IMAGE_BACKEND}", 'backend')
                 }
-            }
-        }
 
         stage('Build Frontend') {
             steps {
