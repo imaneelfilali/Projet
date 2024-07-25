@@ -17,6 +17,17 @@ pipeline {
                 )
             }
         }
+    stage('Docker Push') {
+        steps {
+            script {
+                docker.withRegistry('https://index.docker.io/v1/', 'DOCKERHUB') {
+                    sh "docker push ${DOCKER_IMAGE_BACKEND}"
+                    sh "docker push ${DOCKER_IMAGE_FRONTEND}"
+                }
+            }
+        }
+    }
+
 
         stage('Setup Database') {
             steps {
