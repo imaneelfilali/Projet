@@ -20,32 +20,52 @@ pipeline {
 
         stage('Build Backend') {
             steps {
-                script {
-                    docker.image('maven:3.9.8-jdk-17').inside {
-                        sh 'mvn clean install package -f backend/pom.xml'
-                    }
-                    docker.build("${env.DOCKER_IMAGE_BACKEND}", 'backend')
+                dir('backend') {
+                    sh './mvnw clean package -DskipTests'
                 }
             }
         }
 
         stage('Build Frontend') {
             steps {
-                script {
-                    docker.image('node:20').inside {
-                        sh 'cd frontend/sbr-stage && npm install && npm run build'
-                    }
-                    docker.build("${env.DOCKER_IMAGE_FRONTEND}", 'frontend')
+                dir('frontend') {
+                    sh 'npm install'
+                    sh 'npm run build'
                 }
             }
         }
 
-        stage('Push Images') {
+        stage('Test Backend') {
+            steps {
+                dir('backend') {
+                    sh './mvnw test'
+                }
+            }
+        }
+
+        stage('Test Frontend') {
+            steps {
+                dir('frontend') {
+                    sh 'npm test'
+                }
+            }
+        }
+
+        stage('Docker Build') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-credentials') {
-                        docker.image("${env.DOCKER_IMAGE_BACKEND}").push()
-                        docker.image("${env.DOCKER_IMAGE_FRONTEND}").push()
+                    docker.build("${DOCKER_IMAGE_BACKEND}", '-f backend/Dockerfile backend')
+                    docker.build("${DOCKER_IMAGE_FRONTEND}", '-f frontend/Dockerfile frontend')
+                }
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+                        docker.image("${DOCKER_IMAGE_BACKEND}").push()
+                        docker.image("${DOCKER_IMAGE_FRONTEND}").push()
                     }
                 }
             }
@@ -53,17 +73,20 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                script {
-                    sh 'docker-compose down'
-                    sh 'docker-compose up -d'
-                }
+                sh 'docker-compose -f docker-compose.yml up -d'
             }
         }
     }
 
     post {
         always {
-            cleanWs()
+            echo 'Pipeline execution complete.'
+        }
+        success {
+            echo 'Pipeline succeeded!'
+        }
+        failure {
+            echo 'Pipeline failed.'
         }
     }
 }
