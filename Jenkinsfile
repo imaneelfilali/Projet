@@ -21,9 +21,12 @@ pipeline {
         stage('Build Backend') {
             steps {
                 script {
+                    // Build the backend using Maven inside a Docker container
                     docker.image('maven:3.9.8-jdk-17').inside {
                         sh 'mvn clean package -f backend/pom.xml'
                     }
+
+                    // Build the Docker image for the backend
                     docker.build("${env.DOCKER_IMAGE_BACKEND}", 'backend')
                 }
             }
@@ -32,7 +35,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    sh 'docker-compose down'
+                    // Use docker-compose to bring down and up the services
+                    sh 'docker-compose down || true'
                     sh 'docker-compose up -d'
                 }
             }
