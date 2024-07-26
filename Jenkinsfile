@@ -65,7 +65,7 @@ pipeline {
 
     post {
         always {
-            cleanWs()
-        }
+                deleteDir() // This ensures the workspace is cleaned after each build
+            }
     }
 }
