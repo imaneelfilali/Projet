@@ -22,7 +22,7 @@ pipeline {
                     steps {
                         script {
                             // Use Maven Docker image to build the backend
-                            docker.image('maven:3.9.8-eclipse-temurin-17').inside {
+                            docker.image('maven').inside {
                                 sh 'mvn package -Dmaven.test.skip -f spring-boot-projeect/pom.xml'
                             }
                             // Build Docker image for the backend
