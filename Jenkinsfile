@@ -37,7 +37,6 @@ pipeline {
                     docker.image('node:20').inside {
                         sh 'cd frontend/sbr-stage && npm install && npm run build'
                     }
-                   
                 }
             }
         }
