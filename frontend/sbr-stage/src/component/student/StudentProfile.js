@@ -12,21 +12,20 @@ const StudentProfile = () => {
 		department: "",
 	});
 
-	// Define the loadStudent function outside of the useEffect hook
-	const loadStudent = async () => {
-		try {
-			const result = await axios.get(
-				`http://localhost:9192/students/student/${id}`
-			);
-			setStudent(result.data);
-		} catch (error) {
-			console.error("Error fetching student data:", error);
-		}
-	};
-
 	useEffect(() => {
-		loadStudent();
-	}, [id]); // Include only `id` as the dependency
+		const loadStudent = async () => {
+			try {
+				const result = await axios.get(
+					`http://localhost:9192/students/student/${id}`
+				);
+				setStudent(result.data);
+			} catch (error) {
+				console.error("Error fetching student data:", error);
+			}
+		};
+
+		loadStudent(); // Call the function
+	}, [id]); // Only the `id` is included as a dependency
 
 	return (
 		<section className="shadow" style={{ backgroundColor: "whitesmoke" }}>
