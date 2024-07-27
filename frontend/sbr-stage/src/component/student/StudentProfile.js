@@ -17,7 +17,7 @@ const StudentPofile = () => {
 
 	useEffect(() => {
 		loadStudent();
-	}, []);
+	}, [loadStudent]);
 
 	const loadStudent = async () => {
 		const result = await axios.get(
