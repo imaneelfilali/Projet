@@ -19,18 +19,17 @@ pipeline {
         }
 
         stage('Build Backend') {
-            steps {
-                script {
-                    // Use Maven Docker image to build the backend
-                    docker.image('maven').inside {
-                        sh 'mvn package -Dmaven.test.skip -f spring-boot-projeect/pom.xml'
+                    steps {
+                        script {
+                            // Use Maven Docker image to build the backend
+                            docker.image('maven').inside {
+                                sh 'mvn package -Dmaven.test.skip -f spring-boot-projeect/pom.xml'
+                            }
+                            // Build Docker image for the backend
+                            docker.build("${env.DOCKER_IMAGE_BACKEND}", 'spring-boot-projeect')
+                        }
                     }
-                    // Build Docker image for the backend
-                    docker.build("elfilaliimane02273/pfa-ci-cd-backend:v1.0", 'spring-boot-projeect')
                 }
-            }
-        }
-
 
         stage('Build Frontend') {
             steps {
@@ -39,7 +38,7 @@ pipeline {
                         sh 'cd frontend/sbr-stage && npm install && CI=false npm run build'
                     }
                     docker.build("${env.DOCKER_IMAGE_FRONTEND}", 'frontend/sbr-stage')
-
+                }
             }
         }
 
