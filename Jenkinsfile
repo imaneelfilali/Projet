@@ -35,9 +35,9 @@ pipeline {
             steps {
                 script {
                     docker.image('node:20').inside {
-                        sh 'cd frontend/sbr-stage && npm install && CI=false npm run build'
+                        sh 'npm install && CI=false npm run build'
                     }
-                    docker.build("${env.DOCKER_IMAGE_FRONTEND}")
+                    docker.build("${env.DOCKER_IMAGE_FRONTEND}", 'frontend/sbr-stage')
                 }
             }
         }
