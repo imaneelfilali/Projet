@@ -48,6 +48,7 @@ pipeline {
                     docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-credentials') {
                         docker.image("${env.DOCKER_IMAGE_BACKEND}").push()
                         docker.image("${env.DOCKER_IMAGE_FRONTEND}").push()
+                        docker.image("${env.DOCKER_IMAGE_DB}").push()
                     }
                 }
             }
