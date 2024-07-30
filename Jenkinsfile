@@ -57,8 +57,11 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    sh 'docker-compose down'
-                    sh 'docker-compose up -d'
+                    sh 'docker-compose down || true'
+                    // Remove any existing containers that may conflict
+                    sh 'docker rm -f db-1 backend frontend || true'
+                    // Recreate and start containers using Docker Compose
+                    sh 'docker compose up -d'
                 }
             }
         }
