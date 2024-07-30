@@ -59,7 +59,7 @@ pipeline {
                 script {
                     sh 'docker-compose down || true'
                     // Remove any existing containers that may conflict
-                    sh 'docker rm -f db-1 backend frontend || true'
+                    sh 'docker rm -f db-1 backend frontend db || true'
                     // Recreate and start containers using Docker Compose
                     sh 'docker compose up -d'
                 }
