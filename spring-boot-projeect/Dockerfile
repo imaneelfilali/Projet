@@ -8,4 +8,4 @@ COPY target/spring-boot-projeect.jar /app/spring-boot-projeect.jar
 EXPOSE 9192
 
 # Set the entry point to run the JAR file
-ENTRYPOINT ["java", "-jar", "/app/spring-boot-projeect.jar"]
+ENTRYPOINT ["java", "-jar", "spring-boot-projeect.jar"]
