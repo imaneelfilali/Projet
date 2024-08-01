@@ -15,6 +15,7 @@ const EditeStudent = () => {
     const { firstName, lastName, email, department } = student;
 
     useEffect(() => {
+        // Define loadStudent inside useEffect
         const loadStudent = async () => {
             try {
                 const result = await axios.get(`http://localhost:9192/students/student/${id}`);
@@ -25,7 +26,7 @@ const EditeStudent = () => {
         };
 
         loadStudent();
-    }, [id]);
+    }, [id]); // Add id as a dependency to re-run effect when id changes
 
     const handleInputChange = (e) => {
         setStudent({ ...student, [e.target.name]: e.target.value });
