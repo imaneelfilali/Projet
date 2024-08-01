@@ -15,18 +15,12 @@ const EditeStudent = () => {
     const { firstName, lastName, email, department } = student;
 
     useEffect(() => {
-        // Define loadStudent inside useEffect
         const loadStudent = async () => {
-            try {
-                const result = await axios.get(`http://localhost:9192/students/student/${id}`);
-                setStudent(result.data);
-            } catch (error) {
-                console.error('Failed to fetch student data:', error);
-            }
+            const result = await axios.get(`http://localhost:9192/students/student/${id}`);
+            setStudent(result.data);
         };
-
         loadStudent();
-    }, [id]); // Add id as a dependency to re-run effect when id changes
+    }, [id]);
 
     const handleInputChange = (e) => {
         setStudent({ ...student, [e.target.name]: e.target.value });
@@ -34,12 +28,9 @@ const EditeStudent = () => {
 
     const updateStudent = async (e) => {
         e.preventDefault(); // Prevent default form submission
-        try {
-            await axios.put(`http://localhost:9192/students/update/${id}`, student);
-            navigate("/view-students");
-        } catch (error) {
-            console.error('Failed to update student data:', error);
-        }
+        await axios.put(`http://localhost:9192/students/update/${id}`, student);
+        // Add any logic for handling success or failure of the API call
+        navigate("/view-students");
     };
 
     return (
@@ -96,16 +87,12 @@ const EditeStudent = () => {
                 </div>
                 <div className="row mb-5">
                     <div className="col-sm-2">
-                        <button
-                            type="submit"
-                            className="btn btn-outline-success btn-lg">
+                        <button type="submit" className="btn btn-outline-success btn-lg">
                             Save
                         </button>
                     </div>
                     <div className="col-sm-2">
-                        <Link
-                            to={"/view-students"}
-                            className="btn btn-outline-warning btn-lg">
+                        <Link to={"/view-students"} className="btn btn-outline-warning btn-lg">
                             Cancel
                         </Link>
                     </div>
@@ -113,6 +100,6 @@ const EditeStudent = () => {
             </form>
         </div>
     );
-}
+};
 
 export default EditeStudent;
