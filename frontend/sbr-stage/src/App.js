@@ -18,6 +18,7 @@ function App() {
           <Route exact path="/" element={<Home />} />
           <Route exact path="/view-students" element={<StudentsView />} />
           <Route exact path="/add-student" element={<AddStudent />} /> {/* Use AddStudent component */}
+          <Route exact path="/edit-student/:id" element={<EditeStudent/>} />
           <Route exact path="/student-profile/:id" element={<StudentPofile/>} />
         </Routes>
       </Router>
